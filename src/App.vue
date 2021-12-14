@@ -1,6 +1,10 @@
 <template>
   <h1>covid</h1>
-  <LineChart />
+  <LineChart
+    v-if="state.isLoaded"
+    v-bind:chartData="state.chartData"
+    v-bind:chartOptions="state.chartOptions"
+  />
 </template>
 
 <script>
@@ -20,15 +24,19 @@ export default {
       arrOnVentilators: [],
       arrRecovered: [],
       arrDeaths: [],
+      state: {
+        isLoaded: false,
+        chartData: [],
+      },
     };
   },
-  async created() {
+  async mounted() {
     // console.log("mounted in the composition api!");
     const { data } = await axios.get(
       " https://api.covidtracking.com/v1/us/daily.json"
     );
     // console.log(data);
-
+    let positiveDates = [];
     data.forEach((item) => {
       const date = moment(item.date, "YYYYMMDD").format("MM/DD");
 
@@ -48,10 +56,15 @@ export default {
       this.arrRecovered.push({ date, total: recovered });
       this.arrDeaths.push({ date, total: death });
 
-      // console.log(this.arrPositive);
+      positiveDates.push(date);
+      // this.state.chartData.push({ positive });
 
-      this.$store.commit("getPositive", this.arrPositive);
+      // console.log(this.arrPositive);
     });
+
+    this.$store.commit("getPositive", this.arrPositive);
+    this.state.chartData = positiveDates;
+    this.state.isLoaded = true;
   },
 };
 </script>
