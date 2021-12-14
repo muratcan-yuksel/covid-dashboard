@@ -2,6 +2,7 @@
   <h1>covid</h1>
   <LineChart
     v-if="state.isLoaded"
+    :cases="state.cases"
     v-bind:chartData="state.chartData"
     v-bind:chartOptions="state.chartOptions"
   />
@@ -27,6 +28,7 @@ export default {
       state: {
         isLoaded: false,
         chartData: [],
+        cases: [],
       },
     };
   },
@@ -37,6 +39,7 @@ export default {
     );
     // console.log(data);
     let positiveDates = [];
+    let positiveCases = [];
     data.forEach((item) => {
       const date = moment(item.date, "YYYYMMDD").format("MM/DD");
 
@@ -57,13 +60,13 @@ export default {
       this.arrDeaths.push({ date, total: death });
 
       positiveDates.push(date);
-      // this.state.chartData.push({ positive });
-
-      // console.log(this.arrPositive);
+      positiveCases.push(positive);
     });
 
     this.$store.commit("getPositive", this.arrPositive);
     this.state.chartData = positiveDates;
+    this.state.cases = positiveCases;
+
     this.state.isLoaded = true;
   },
 };

@@ -15,6 +15,10 @@ export default {
       // required: false,
       responsive: false,
     },
+    cases: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
@@ -24,12 +28,12 @@ export default {
           datasets: [
             {
               label: "Human 1",
-              data: [20, 10, 4, 2],
+              data: this.cases,
             },
-            {
-              label: "Human 2",
-              data: [10, 20, 2, 4],
-            },
+            // {
+            //   label: "Human 2",
+            //   data: [10, 20, 2, 4],
+            // },
           ],
         },
         chartOptions: {
@@ -42,7 +46,8 @@ export default {
   mounted() {
     this.renderChart(this.state.chartData, this.state.chartOptions);
     // console.log(this.$store.state.arrPositive);
-    console.log(this.chartData);
+    // console.log(this.chartData);
+    console.log(this.cases);
   },
   // async created() {
   //   await this.$store.state.arrPositive.map((item) => {
