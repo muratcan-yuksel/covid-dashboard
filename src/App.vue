@@ -1,30 +1,59 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view />
+  <h1>covid</h1>
+  <LineChart />
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import LineChart from "./components/LineChart.vue";
+import axios from "axios";
+import moment from "moment";
+export default {
+  name: "App",
+  components: {
+    LineChart,
+  },
+  data() {
+    return {
+      arrPositive: [],
+      arrHospitalized: [],
+      arrInIcu: [],
+      arrOnVentilators: [],
+      arrRecovered: [],
+      arrDeaths: [],
+    };
+  },
+  async created() {
+    // console.log("mounted in the composition api!");
+    const { data } = await axios.get(
+      " https://api.covidtracking.com/v1/us/daily.json"
+    );
+    // console.log(data);
 
-#nav {
-  padding: 30px;
-}
+    data.forEach((item) => {
+      const date = moment(item.date, "YYYYMMDD").format("MM/DD");
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+      const {
+        positive,
+        hospitalizedCurrently,
+        inIcuCurrently,
+        death,
+        recovered,
+        onVentilatorCurrently,
+      } = item;
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+      this.arrPositive.push({ date, total: positive });
+      this.arrHospitalized.push({ date, total: hospitalizedCurrently });
+      this.arrInIcu.push({ date, total: inIcuCurrently });
+      this.arrOnVentilators.push({ date, total: onVentilatorCurrently });
+      this.arrRecovered.push({ date, total: recovered });
+      this.arrDeaths.push({ date, total: death });
+
+      // console.log(this.arrPositive);
+
+      this.$store.commit("getPositive", this.arrPositive);
+    });
+  },
+};
+</script>
+
+<style></style>
